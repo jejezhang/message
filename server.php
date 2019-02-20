@@ -81,11 +81,18 @@ class webSocket
         ) {
             return $response->end('Favicon Filter');
         }
+        $response->header('Access-Control-Allow-Origin', '*');
 
-        $params = $request->get;
+        $params = $request->post;
+        $pic = base64_decode($params['pic'], true);
 
-        return $response->end('server http');
+        $imagename = date('YmdHi').uniqid();
+        $path = './img/'.$imagename. '.png';
+        file_put_contents($path, $pic);
 
+        $result['url'] =  './img/'.$imagename. '.png';
+        $response->end($result['url']);
+        return true;
     }
 
     public function onClose($server, $fd)

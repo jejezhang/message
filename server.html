@@ -8,6 +8,7 @@
     <title>在线聊天服务端</title>
 </head>
 <link rel="stylesheet" href="./css/chat.css" type="text/css" />
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <body>
 <div class="direct-chat-msg" id="client" style="display: none;" ondblclick="oneByOne(this)">
     <div class="direct-chat-info clearfix">
@@ -26,17 +27,31 @@
     <img class="right-direct-chat-img direct-chat-img" id="server-img" src="">
     <div class="text-chat right-text-chat" id="server-message"></div>
 </div>
-<div style="width:960px;margin: 0px auto;">
-    <div style="border: 1px solid lightgray;height:700px;overflow: scroll" id="chat">
+<div id="modal-overlay">
+    <div class="modal-data">
+        <img src="" onclick="small_img(this)">
     </div>
-    <div style="width:960px;margin-top:2px;">
-        <textarea id="message" rows="5" cols="156"></textarea><br>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 text-center">简易在线聊天</div>
+        <div class="col-md-12">
+            <div class="chat-window" id="chat">
+            </div>
+            <div class="message-parent">
+                <div class="col-md-11 rich send-message" id="message" contenteditable="true">
+                </div>
+                <button onclick="sendMessage();" type="button" class="btn btn-success btn-lg">Send</button>
+            </div>
+        </div>
     </div>
 </div>
 </body>
 </html>
 
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script>
     var oneByOneFd = 0;
     document.onkeydown = function (e) {
@@ -46,7 +61,7 @@
             sendMessage();
         }
 
-        if (event.keyCode == 8 && $('#message').val() == '') {
+        if (event.keyCode == 8 && $('#message').html() == '') {
             oneByOneFd = 0;
             $('#message').attr('placeholder','');
         }
@@ -69,8 +84,7 @@
         var data = JSON.parse(event.data);
 
         if (data.from == 'close') {
-            $('#message').val('');
-            $('#message').attr('placeholder','');
+            $('#message').html('');
             alert('对方已经离线!');
             return true;
         }
@@ -99,8 +113,7 @@
             client.find('#client-img').attr('fd', data.fd);
             $('#chat').append(client);
             client.css('display', 'block');
-            $('#message').val('');
-            $('#message').attr('placeholder','');
+            $('#message').html('');
             $('#chat').scrollTop($('#chat')[0].scrollHeight + 200);
         }
 
@@ -113,8 +126,7 @@
             server.find('#server-img').attr('fd', data.fd);
             $('#chat').append(server);
             server.css('display', 'block');
-            $('#message').val('');
-            $('#message').attr('placeholder','');
+            $('#message').html('');
             $('#chat').scrollTop($('#chat')[0].scrollHeight + 200);
         }
         console.log(data);
@@ -126,7 +138,7 @@
     }
 
     function sendMessage() {
-        var message =$('#message').val();
+        var message =$('#message').html();
 
         if (message == '') {
             return;
@@ -160,12 +172,42 @@
     $('#message').on({
         click: function () {
             clearInterval(title_msg_timer);
-            document.title = '在线聊天客户端';
+            document.title = '在线聊天服务端';
         },
         keydown: function () {
             clearInterval(title_msg_timer);
-            document.title = '在线聊天客户端';
+            document.title = '在线聊天服务端';
         }
     });
 
+    var putUrl = "http://127.0.0.1:8888";
+    document.onpaste = function (event) {
+        if($(event.target).hasClass('rich')){
+            let items = (event.clipboardData || event.originalEvent.clipboardData).items;
+            let item = items[items.length - 1];
+            if (item.kind === 'file' && (item.type == "image/png" || item.type == "image/jpeg" || item.type == "image/jpg")) {
+                var blob = item.getAsFile();
+                var reader = new FileReader();
+
+                reader.onload = function (event) {
+                    var content = event.target.result;
+                    var pic = content.substr(22);
+                    $.post(putUrl, {"pic":pic}, function (data){
+                        console.log(data);
+                        $('#message').append($('<img src="'+data+'" style="height:120px;width: 100px;" onclick="big_img(this)">'))
+                    });
+                };
+                reader.readAsDataURL(blob);
+            }
+        }
+    };
+
+    function big_img(obj) {
+        $('#modal-overlay').find('.modal-data').find('img').attr('src', $(obj).attr('src'));
+        $('#modal-overlay').css('visibility', 'visible');
+    }
+    function small_img(obj) {
+        $('#modal-overlay').css('visibility', 'hidden');
+        $(obj).attr('src', '');
+    }
 </script>

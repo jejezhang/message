@@ -6,7 +6,61 @@ body {
     overflow-y: auto;
     line-height: 24px;
 }
-
+/* 定义模态对话框外面的覆盖层样式 */
+#modal-overlay {
+    visibility: hidden;
+    position: absolute;   /* 使用绝对定位或固定定位  */
+    left: 0px;
+    top: 0px;
+    width:100%;
+    height:100%;
+    text-align:center;
+    z-index: 1000;
+    /*background-color: #333;*/
+    /*opacity: 0.9;   !* 背景半透明 *!*/
+}
+/* 模态框样式 */
+.modal-data{
+    /*padding:15px;*/
+    /*text-align:center;*/
+}
+.modal-data img{
+    width: 100%;
+    height: 100%;
+}
+/*为空时显示 element attribute content*/
+.rich:empty:before{
+    content: attr(placeholder);   /* element attribute*/
+    /*content: 'this is content';*/
+    color:#999;
+}
+/*焦点时内容为空*/
+.rich:focus:before{
+    content:none;
+}
+.chat-window{
+    border-radius:5px;
+    border: 1px solid lightgray;
+    height:700px;
+    overflow: scroll
+}
+.message-parent{
+    height:120px;
+    position:relative;
+}
+.send-message{
+    border: 1px solid lightgray;
+    height:120px;
+    margin-top:10px;
+    overflow:scroll;
+    border-radius:5px;
+}
+.btn{
+    height:100%;
+    position: absolute;
+    right:0px;
+    top:0px;
+}
 .text-chat{
     border-radius: 5px;
     position: relative;
