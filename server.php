@@ -16,7 +16,7 @@ class webSocket
         $this->server->on('request', [$this, 'onRequest']);
 
         $this->server->set([
-            'daemonize' => 1,
+            'daemonize' => 0,
         ]);
 
         $this->server->start();
