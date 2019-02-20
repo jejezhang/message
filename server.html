@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>在线聊天服务端</title>
+</head>
+<link rel="stylesheet" href="./css/chat.css" type="text/css" />
+<body>
+<div class="direct-chat-msg" id="client" style="display: none;" ondblclick="oneByOne(this)">
+    <div class="direct-chat-info clearfix">
+        <span class="direct-chat-name pull-left" id="client-name"></span>
+        <span  class="direct-chat-timestamp" style="margin-left:10px;" id="client-time"></span>
+    </div>
+    <img class="left-direct-chat-img direct-chat-img" id="client-img" src="">
+    <div class="text-chat left-text-chat" id="client-message"></div>
+</div>
+<div class="direct-chat-msg right" id="server" style="display: none;" ondblclick="oneByOne(this)">
+    <div class="direct-chat-info clearfix">
+        <span class="direct-chat-name pull-right" id="server-name"></span>
+        <span  class="direct-chat-timestamp pull-right" style="margin-right:10px;" id="server-time"></span>
+    </div>
+    <div class="clearfix"></div>
+    <img class="right-direct-chat-img direct-chat-img" id="server-img" src="">
+    <div class="text-chat right-text-chat" id="server-message"></div>
+</div>
+<div style="width:960px;margin: 0px auto;">
+    <div style="border: 1px solid lightgray;height:700px;overflow: scroll" id="chat">
+    </div>
+    <div style="width:960px;margin-top:2px;">
+        <textarea id="message" rows="5" cols="156"></textarea><br>
+    </div>
+</div>
+</body>
+</html>
+
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    var oneByOneFd = 0;
+    document.onkeydown = function (e) {
+        var e = e || event;
+        console.log(event.keyCode)
+        if (event.keyCode == 13) {
+            sendMessage();
+        }
+
+        if (event.keyCode == 8 && $('#message').val() == '') {
+            oneByOneFd = 0;
+            $('#message').attr('placeholder','');
+        }
+    };
+
+    var ws = new WebSocket('ws://127.0.0.1:8888?name=jeje&img=./img/s.jpg');
+
+    ws.onopen = function (event) {
+        console.log('已经连接服务器');
+    };
+    ws.onclose = function (event) {
+        console.log('服务器发生错误');
+    };
+
+    ws.onerror = function (event) {
+        console.log('服务器异常');
+    };
+
+    ws.onmessage = function (event) {
+        var data = JSON.parse(event.data);
+
+        if (data.from == 'close') {
+            $('#message').val('');
+            $('#message').attr('placeholder','');
+            alert('对方已经离线!');
+            return true;
+        }
+
+        if (data.from == 'client') {
+            title_message();
+            try {
+                Notification.requestPermission(function(status) {
+                    if (status == "granted") {
+                        var notification = new Notification("收到新消息:", {
+                            dir:  "auto",
+                            lang: "zh-CN",
+                            tag:   Math.random(),
+                            icon: "http://kf.gplqdb.com/img/head_pic.jpg",
+                            body:  data.message
+                        });
+                    }
+                });
+            } catch(err) {
+            }
+            var client = $('#client').clone(true);
+            client.find('#client-time').html(data.time);
+            client.find('#client-name').html(data.name);
+            client.find('#client-message').html(data.message);
+            client.find('#client-img').attr('src', data.img);
+            client.find('#client-img').attr('fd', data.fd);
+            $('#chat').append(client);
+            client.css('display', 'block');
+            $('#message').val('');
+            $('#message').attr('placeholder','');
+            $('#chat').scrollTop($('#chat')[0].scrollHeight + 200);
+        }
+
+        if (data.from == 'server') {
+            var server = $('#server').clone(true);
+            server.find('#server-time').html(data.time);
+            server.find('#server-name').html(data.name);
+            server.find('#server-message').html(data.message);
+            server.find('#server-img').attr('src', './img/s.jpg');
+            server.find('#server-img').attr('fd', data.fd);
+            $('#chat').append(server);
+            server.css('display', 'block');
+            $('#message').val('');
+            $('#message').attr('placeholder','');
+            $('#chat').scrollTop($('#chat')[0].scrollHeight + 200);
+        }
+        console.log(data);
+    };
+
+    function oneByOne(obj) {
+        $('#message').attr('placeholder', '单独发送消息给' + $(obj).find('.direct-chat-name').html());
+        oneByOneFd = $(obj).find('.direct-chat-img').attr('fd');
+    }
+
+    function sendMessage() {
+        var message =$('#message').val();
+
+        if (message == '') {
+            return;
+        }
+
+        var data = JSON.stringify({
+            message: message,
+            oneByOneFd:oneByOneFd,
+            name:'JeJe',
+            type:'server'
+        });
+        oneByOneFd = 0;
+        ws.send(data);
+    }
+
+    var title_msg_timer = '';
+
+    function title_message() {
+        clearInterval(title_msg_timer);
+        var str = '收到条新消息...';
+        document.title = str;
+        title_msg_timer = setInterval(function () {
+            var arr = str.split('');
+            var str2 = arr.shift();
+            var newArr = arr.concat(str2);
+            str = newArr.join('');
+            document.title = str;
+        }, 100);
+    }
+
+    $('#message').on({
+        click: function () {
+            clearInterval(title_msg_timer);
+            document.title = '在线聊天客户端';
+        },
+        keydown: function () {
+            clearInterval(title_msg_timer);
+            document.title = '在线聊天客户端';
+        }
+    });
+
+</script>
