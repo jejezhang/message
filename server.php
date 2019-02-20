@@ -84,9 +84,8 @@ class webSocket
 
         $params = $request->get;
 
-        echo '<pre>';
-        print_r($params);
-        echo '</pre>';
+        return $response->end('server http');
+
     }
 
     public function onClose($server, $fd)
