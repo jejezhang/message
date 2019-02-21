@@ -39,6 +39,16 @@
         <div class="col-md-12">
             <div class="chat-window" id="chat">
             </div>
+            <form class="form-inline" style="margin-top:8px;">
+                <div class="form-group">
+                    <label for="name">昵称</label>
+                    <input type="text" class="form-control" id="name" placeholder="Jane Doe">
+                </div>
+                <div class="form-group">
+                    <label for="img">头像地址</label>
+                    <input type="email" class="form-control" id="img" placeholder="http://www.jeje.me/img.jpg">
+                </div>
+            </form>
             <div class="message-parent">
                 <div class="col-md-11 rich send-message" id="message" contenteditable="true">
                 </div>
@@ -74,7 +84,7 @@
     };
 
     rand = Math.ceil(Math.random() * 1000);
-    var ws = new WebSocket('ws://127.0.0.1:8888?client_id=client' + rand + '&name=' + name + '&img=' + img);
+    var ws = new WebSocket('wss://chat.jeje.me:8888?client_id=client' + rand + '&name=' + name + '&img=' + img);
 
     ws.onopen = function (event) {
         console.log('已经连接服务器');
@@ -98,7 +108,7 @@
         }
 
         if (data.from == 'client') {
-            if (data.name == name) {
+            if (data.name == name || data.name == $('#name').val()) {
                 var server = $('#server').clone(true);
                 server.find('#server-time').html(data.time);
                 server.find('#server-name').html(data.name);
@@ -119,7 +129,7 @@
                                 dir:  "auto",
                                 lang: "zh-CN",
                                 tag:   Math.random(),
-                                icon: "http://kf.gplqdb.com/img/head_pic.jpg",
+                                icon: "https://chat.jeje.me/img/s.jpg",
                                 body:  data.message
                             });
                         }
@@ -149,7 +159,7 @@
                             dir:  "auto",
                             lang: "zh-CN",
                             tag:   Math.random(),
-                            icon: "http://kf.gplqdb.com/img/head_pic.jpg",
+                            icon: "https://chat.jeje.me/img/s.jpg",
                             body:  data.message
                         });
                     }
@@ -185,8 +195,8 @@
 
         var data = JSON.stringify({
             message: message,
-            img:img,
-            name:name,
+            img: $('#img').val() == '' ? img : $('#img').val(),
+            name: $('#name').val() == '' ? name : $('#name').val(),
             oneByOneFd:oneByOneFd,
             type:'client'
         });
@@ -224,7 +234,7 @@
             document.title = '在线聊天客户端';
         }
     });
-    var putUrl = "http://127.0.0.1:8888";
+    var putUrl = "https://chat.jeje.me:8888";
     document.onpaste = function (event) {
         if($(event.target).hasClass('rich')){
             let items = (event.clipboardData || event.originalEvent.clipboardData).items;

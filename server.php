@@ -15,6 +15,12 @@ class webSocket
         $this->server->on('close', [$this, 'onClose']);
         $this->server->on('request', [$this, 'onRequest']);
 
+        /*$this->server->set([
+           'ssl_key_file' => '/usr/local/nginx/conf/1842744_chat.jeje.me.key',
+           'ssl_cert_file' => '/usr/local/nginx/conf/1842744_chat.jeje.me.pem',
+           'daemonize' => 0,
+        ]);*/
+
         $this->server->set([
             'daemonize' => 0,
         ]);
