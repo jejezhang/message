@@ -8,7 +8,7 @@ class webSocket
 
     public function __construct()
     {
-        $this->server = new \Swoole\WebSocket\Server("0.0.0.0", 8888);
+        $this->server = new \Swoole\WebSocket\Server("0.0.0.0", 8888, SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
 
         $this->server->on('open', [$this, 'onOpen']);
         $this->server->on('message', [$this, 'onMessage']);
