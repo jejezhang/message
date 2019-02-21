@@ -179,7 +179,7 @@
     function sendMessage() {
         var message = $('#message').html();
         console.log(message);
-        if (message == '') {
+        if (message == ' ' || message == '') {
             return;
         }
 
