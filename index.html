@@ -35,18 +35,23 @@
 <div class="container">
 
     <div class="row">
-        <div class="col-md-12 text-center">聊后即焚-在线群聊</div>
+        <div class="col-md-12 text-center">聊后即焚-在线群聊  您的唯一FD为:<font size="5" id="self-fd"></font>, 此FD可用于私聊.</div>
         <div class="col-md-12">
             <div class="chat-window" id="chat">
             </div>
             <form class="form-inline" style="margin-top:8px;">
                 <div class="form-group">
-                    <label for="name">昵称</label>
+                    <label for="name">昵称:</label>
                     <input type="text" class="form-control" id="name" placeholder="Jane Doe">
                 </div>
                 <div class="form-group">
-                    <label for="img">头像地址</label>
+                    <label for="img">头像地址:</label>
                     <input type="email" class="form-control" id="img" placeholder="http://www.jeje.me/img.jpg">
+                </div>
+                &nbsp;
+                <div class="form-group">
+                    <label for="img">私信人 Fd:</label>
+                    <input type="email" class="form-control" id="private-fd" placeholder="私信人 Fd" onblur="check_fd(this)">
                 </div>
             </form>
             <div class="emoji-menu" style="margin-bottom: 35px;min-height:0px;padding: 1px;width: 10px;height: 10px;border: 0px;display: block;font-size: 30px;"  switch="no" onclick="oepn_emoji(this,event);">😀</div>
@@ -205,6 +210,11 @@
             return true;
         }
 
+        if (data.from == 'sendFd') {
+            $('#self-fd').html(data.fd);
+            return true;
+        }
+
         if (data.from == 'client') {
             if (data.name == name || data.name == $('#name').val()) {
                 var server = $('#server').clone(true);
@@ -247,35 +257,7 @@
                 $('#chat').scrollTop($('#chat')[0].scrollHeight + 200);
             }
         }
-
-        if (data.from == 'server') {
-            title_message();
-            try {
-                Notification.requestPermission(function(status) {
-                    if (status == "granted") {
-                        var notification = new Notification("收到新消息:", {
-                            dir:  "auto",
-                            lang: "zh-CN",
-                            tag:   Math.random(),
-                            icon: "https://chat.jeje.me/img/s.jpg",
-                            body:  data.message
-                        });
-                    }
-                });
-            } catch(err) {
-            }
-            var client = $('#client').clone(true);
-            client.find('#client-time').html(data.time);
-            client.find('#client-name').html(data.name);
-            client.find('#client-message').html(data.message);
-            client.find('#client-img').attr('src', './img/s.jpg');
-            client.find('#client-img').attr('fd', data.fd);
-            $('#chat').append(client);
-            client.css('display', 'block');
-            $('#message').html('');
-            $('#message').attr('placeholder','');
-            $('#chat').scrollTop($('#chat')[0].scrollHeight + 200);
-        }
+        check_fd($('#private-fd'));
         console.log(data);
     };
 
@@ -374,7 +356,6 @@
 
         $('#message').html($('#message').html() + $(obj).html());
         $('.emoji-menu').attr('switch', 'no');
-        // $('#emoji').css('display', 'none');
     }
 
     // 点击屏幕任意位置关闭emoji选择框
@@ -394,6 +375,16 @@
         } else {
             $('#emoji').css('display', 'none');
             $(obj).attr('switch', 'no');
+        }
+    }
+
+    function check_fd(obj) {
+        if ($(obj).val() == '') {
+            $('#message').attr('placeholder', '');
+            oneByOneFd = 0;
+        } else {
+            oneByOneFd = $(obj).val();
+            $('#message').attr('placeholder', '私信给FD' + $(obj).val() + '消息!');
         }
     }
 </script>

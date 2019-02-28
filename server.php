@@ -15,14 +15,10 @@ class webSocket
         $this->server->on('close', [$this, 'onClose']);
         $this->server->on('request', [$this, 'onRequest']);
 
-        /*$this->server->set([
+       $this->server->set([
            'ssl_key_file' => '/usr/local/nginx/conf/1842744_chat.jeje.me.key',
            'ssl_cert_file' => '/usr/local/nginx/conf/1842744_chat.jeje.me.pem',
            'daemonize' => 0,
-        ]);*/
-
-        $this->server->set([
-            'daemonize' => 0,
         ]);
 
         $this->server->start();
@@ -46,6 +42,13 @@ class webSocket
       }*/
 
         echo "server: handshake success with fd{$request->fd},客户端ID{$clientId}\n";
+
+        $arr = [
+            'from' => 'sendFd',
+            'fd' => $request->fd,
+        ];
+
+        $server->push($request->fd, json_encode($arr));
     }
 
     public function onMessage($server, $frame)
