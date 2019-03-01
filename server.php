@@ -93,6 +93,11 @@ class webSocket
         $response->header('Access-Control-Allow-Origin', '*');
 
         $params = $request->post;
+
+        if (empty($params)) {
+           return $response->end('{"code":-1, "msg":"Data Is Invalid", "data":null}');
+        }
+
         $pic = base64_decode($params['pic'], true);
 
         $imagename = date('YmdHi').uniqid();
