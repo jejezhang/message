@@ -84,13 +84,15 @@ class webSocket
 
     public function onRequest($request, $response)
     {
+        $response->header('Access-Control-Allow-Origin', '*');
+        $response->header('Content-Type', 'application/json');
+
         if ($request->server['request_uri'] == '/favicon.ico'
             ||
             $request->server['path_info'] == '/favicon.ico'
         ) {
-            return $response->end('Favicon Filter');
+            return $response->end('{"code":-1, "msg":"Favicon Filter", "data":null}');
         }
-        $response->header('Access-Control-Allow-Origin', '*');
 
         $params = $request->post;
 
