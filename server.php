@@ -49,6 +49,16 @@ class webSocket
         ];
 
         $server->push($request->fd, json_encode($arr));
+
+
+        foreach ($server->connections as $fd) {
+            if ($server->exist($fd) && $fd != $request->fd) {
+                $server->push($fd, json_encode([
+                    'from'      => 'onLine',
+                    'message'   => 'FD:' . $request->fd . '上线了',
+                    ]));
+            }
+        }
     }
 
     public function onMessage($server, $frame)

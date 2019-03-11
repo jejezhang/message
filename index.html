@@ -215,6 +215,24 @@
             return true;
         }
 
+        if (data.from == 'onLine') {
+            try {
+                Notification.requestPermission(function(status) {
+                    if (status == "granted") {
+                        var notification = new Notification("收到新消息:", {
+                            dir:  "auto",
+                            lang: "zh-CN",
+                            tag:   Math.random(),
+                            icon: "https://chat.jeje.me/img/s.jpg",
+                            body:  data.message
+                        });
+                    }
+                });
+            } catch(err) {
+            }
+            return true;
+        }
+
         if (data.from == 'client') {
             if (data.name == name || data.name == $('#name').val()) {
                 var server = $('#server').clone(true);
@@ -267,6 +285,7 @@
     }
 
     function sendMessage() {
+        check_fd($('#private-fd'));
         var message = $('#message').html();
         console.log(message);
         if (message == ' ' || message == '') {
