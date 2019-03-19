@@ -117,8 +117,7 @@ class webSocket
         file_put_contents($path, $pic);
 
         $result['url'] =  './img/'.$imagename. '.png';
-        $response->end($result['url']);
-        return true;
+        return $response->end($result['url']);
     }
 
     public function onClose($server, $fd)
