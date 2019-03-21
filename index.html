@@ -349,9 +349,9 @@
                 reader.onload = function (event) {
                     var content = event.target.result;
                     var pic = content.substr(22);
-                    $.post(putUrl, {"pic":pic}, function (data){
-                        console.log(data);
-                        $('#message').append($('<img src="'+ data.data +'" style="height:120px;width: 100px;" onclick="big_img(this)">'))
+                    $.post(putUrl, {"pic":pic}, function (res){
+                        console.log(res);
+                        $('#message').append($('<img src="'+ res.data +'" style="height:120px;width: 100px;" onclick="big_img(this)">'))
                     });
                 };
                 reader.readAsDataURL(blob);
