@@ -4,7 +4,7 @@
     cd /data/wwwroot/default/message
     git clean -fd
     git fetch
-    git reset --hard origin/$BRANCH
+    git reset --hard origin/master
 
     git submodule update
 
