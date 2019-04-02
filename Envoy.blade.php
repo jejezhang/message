@@ -1,6 +1,6 @@
 @servers(['web' => 'root@120.79.22.146'])
 
-@task('chat')
+@task('chat', ['on' => 'web', 'confirm' => true])
     cd /data/wwwroot/default/message
     git clean -fd
     git fetch
