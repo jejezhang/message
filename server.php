@@ -18,8 +18,8 @@ class webSocket
        $this->server->set([
            'ssl_key_file' => '/usr/local/nginx/conf/3276717_chat.jeje.me.key',
            'ssl_cert_file' => '/usr/local/nginx/conf/3276717_chat.jeje.me.pem',
-           'heartbeat_check_interval' => 1, // 1s探测一次
-           'heartbeat_idle_time' => 5, // 5s未发送数据包就close此连接
+           'heartbeat_check_interval' => 10, // 1s探测一次
+           'heartbeat_idle_time' => 300, // 5s未发送数据包就close此连接
            'daemonize' => 0,
         ]);
 
