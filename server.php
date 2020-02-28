@@ -16,8 +16,10 @@ class webSocket
         $this->server->on('request', [$this, 'onRequest']);
 
        $this->server->set([
-           'ssl_key_file' => '/usr/local/nginx/conf/1842744_chat.jeje.me.key',
-           'ssl_cert_file' => '/usr/local/nginx/conf/1842744_chat.jeje.me.pem',
+           'ssl_key_file' => '/usr/local/nginx/conf/3276717_chat.jeje.me.key',
+           'ssl_cert_file' => '/usr/local/nginx/conf/3276717_chat.jeje.me.pem',
+           'heartbeat_check_interval' => 1, // 1s探测一次
+           'heartbeat_idle_time' => 5, // 5s未发送数据包就close此连接
            'daemonize' => 0,
         ]);
 
